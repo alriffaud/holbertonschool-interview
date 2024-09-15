@@ -24,5 +24,8 @@ void binary_tree_print(const binary_tree_t *);
 typedef struct binary_tree_s heap_t;
 
 binary_tree_t *binary_tree_node(binary_tree_t *parent, int value);
+heap_t *heap_insert(heap_t **root, int value);
+void swap_values(heap_t *node_a, heap_t *node_b);
+heap_t *find_insertion_point(heap_t *root);
 
 #endif /* _BINARY_TREES_H_ */

@@ -26,8 +26,8 @@ def divisors(n):
         n (int): Is the initial number and first element of the list.
     Returns: A list of divisors of n with the previous conditions.
     """
-    div_list = []
-    i = n
+    div_list = [n]
+    i = n // 2
     anterior = n
     while (i > 0):
         if (anterior % i == 0):
@@ -35,7 +35,9 @@ def divisors(n):
             anterior = i
             if (is_prime(i) or i == 2):
                 break
-        i -= 1
+            i = i // 2  # To don't have to iterate so many times unnecessarily
+        else:
+            i -= 1
     return div_list
 
 

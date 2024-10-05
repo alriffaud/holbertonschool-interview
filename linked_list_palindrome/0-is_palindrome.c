@@ -1,27 +1,5 @@
 #include "lists.h"
 
-
-/**
- * add_nodeint_begin - adds a new node at the beginning of a listint_t list
- * @head: pointer to pointer of first node of listint_t list
- * @n: integer to be included in new node
- * Return: address of the new element or NULL if it fails
- */
-listint_t *add_nodeint_begin(listint_t **head, const int n)
-{
-	listint_t *new_node;
-
-	new_node = malloc(sizeof(listint_t));
-	if (new_node == NULL)
-		return (NULL);
-
-	new_node->n = n;
-	new_node->next = *head;
-	*head = new_node;
-
-	return (new_node);
-}
-
 /**
  * is_palindrome - checks if a singly linked list is a palindrome
  * @head: double pointer to head of list
@@ -29,34 +7,27 @@ listint_t *add_nodeint_begin(listint_t **head, const int n)
  */
 int is_palindrome(listint_t **head)
 {
-	listint_t *new_list = NULL, *current, *current2;
-	int res;
+	listint_t *current;
+	int i, j, len;
+	int array[10000];
 
-	current = *head;
-
-	if (*head == NULL || (*head)->next == NULL)
+	if (*head == NULL)
 		return (1);
 
-	/* Copy the list in reverse order */
+	current = *head;
+	len = 0;
 	while (current != NULL)
 	{
-		add_nodeint_begin(&new_list, current->n);
+		array[len] = current->n;
 		current = current->next;
+		len++;
 	}
 
-	/* Compare both lists */
-	current = *head;
-	current2 = new_list;
-	while (current != NULL && current->n == current2->n)
+	for (i = 0, j = len - 1; i < len / 2; i++, j--)
 	{
-		current = current->next;
-		current2 = current2->next;
+		if (array[i] != array[j])
+			return (0);
 	}
-	if (current == NULL)
-		res = 1;
-	else
-		res = 0;
 
-	free_listint(new_list);
-	return (res);
+	return (1);
 }

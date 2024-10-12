@@ -3,8 +3,6 @@
 This script reads input lines from a log file and calculates accumulated
 statistics on file sizes and HTTP status codes.
 """
-
-
 import sys
 import signal
 
@@ -33,7 +31,7 @@ def print_stats():
 
 
 def signal_handler(sig, frame):
-    """ Function that handles keyboard interrupt (CTRL + C). """
+    """ Function that handles keyboard interrupt CTRL+C. """
     print_stats()
     sys.exit(0)
 

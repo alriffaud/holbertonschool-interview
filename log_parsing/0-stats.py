@@ -3,6 +3,8 @@
 This script reads input lines from a log file and calculates accumulated
 statistics on file sizes and HTTP status codes.
 """
+
+
 import sys
 import signal
 

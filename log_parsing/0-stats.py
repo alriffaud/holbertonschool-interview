@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-This script reads input lines from a log file and calculates accumulated
-statistics on file sizes and HTTP status codes.
+Log parsing
 """
 import sys
 import signal
@@ -67,6 +66,4 @@ for line in sys.stdin:
             print_stats()
 
     except (ValueError, IndexError):
-        # If there is any error in the format or data conversion, we ignore
-        # the line.
         continue

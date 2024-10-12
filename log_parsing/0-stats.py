@@ -1,69 +1,65 @@
 #!/usr/bin/python3
 """
-Log parsing
+This script reads input lines from a log file and calculates accumulated
+statistics on file sizes and HTTP status codes.
 """
 import sys
 import signal
 
 
-# Inicializamos las métricas
-total_size = 0
-status_codes_count = {
-    200: 0,
-    301: 0,
-    400: 0,
-    401: 0,
-    403: 0,
-    404: 0,
-    405: 0,
-    500: 0
-}
-line_count = 0
+class LogParser:
+    def __init__(self):
+        self.total_size = 0
+        self.status_codes_count = {
+            200: 0,
+            301: 0,
+            400: 0,
+            401: 0,
+            403: 0,
+            404: 0,
+            405: 0,
+            500: 0
+        }
+        self.line_count = 0
 
+    def print_stats(self):
+        """ Function that prints accumulated statistics. """
+        print(f"File size: {self.total_size}")
+        for code in sorted(self.status_codes_count):
+            if self.status_codes_count[code] > 0:
+                print(f"{code}: {self.status_codes_count[code]}")
 
-def print_stats():
-    """ Function that prints accumulated statistics. """
-    print(f"File size: {total_size}")
-    for code in sorted(status_codes_count):
-        if status_codes_count[code] > 0:
-            print(f"{code}: {status_codes_count[code]}")
+    def signal_handler(self, sig, frame):
+        """ Function that handles keyboard interrupt CTRL+C. """
+        self.print_stats()
+        sys.exit(0)
 
-
-def signal_handler(sig, frame):
-    """ Function that handles keyboard interrupt CTRL+C. """
-    print_stats()
-    sys.exit(0)
-
-
-# We configure the handling of the SIGINT signal (CTRL + C)
-signal.signal(signal.SIGINT, signal_handler)
-
-# We read stdin line by line
-for line in sys.stdin:
-    try:
+    def process_line(self, line):
+        """ Process a single line of log. """
         parts = line.split()
-        # We verify that the line has at least 7 parts necessary for the
-        # correct format.
         if len(parts) < 7:
-            continue
+            return
+        try:
+            file_size = int(parts[-1])
+            status_code = int(parts[-2])
+            self.total_size += file_size
+            if status_code in self.status_codes_count:
+                self.status_codes_count[status_code] += 1
+            self.line_count += 1
+        except (ValueError, IndexError):
+            # Log the error for debugging
+            print(f"Error processing line: {line.strip()}", file=sys.stderr)
 
-        # We extract the file size and status code
-        file_size = int(parts[-1])
-        status_code = int(parts[-2])
+    def run(self):
+        """ Main method to run the log parser. """
+        signal.signal(signal.SIGINT, self.signal_handler)
+        for line in sys.stdin:
+            self.process_line(line)
+            if self.line_count % 100 == 0:  # Print stats every 100 lines
+                self.print_stats()
+        self.print_stats()  # Print final stats at end
 
-        # We updated the total size
-        total_size += file_size
 
-        # We update the status code count if it is one of the expected ones
-        if status_code in status_codes_count:
-            status_codes_count[status_code] += 1
-
-        # We count the processed lines
-        line_count += 1
-
-        # We print statistics every 10 lines
-        if line_count % 10 == 0:
-            print_stats()
-
-    except (ValueError, IndexError):
-        continue
+if __name__ == "__main__":
+    parser = LogParser()
+    parser.run()

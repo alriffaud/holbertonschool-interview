@@ -55,7 +55,7 @@ class LogParser:
         signal.signal(signal.SIGINT, self.signal_handler)
         for line in sys.stdin:
             self.process_line(line)
-            if self.line_count % 100 == 0:  # Print stats every 100 lines
+            if self.line_count % 10 == 0:  # Print stats every 100 lines
                 self.print_stats()
         self.print_stats()  # Print final stats at end
 

@@ -41,10 +41,14 @@ class LogParser:
             return
         try:
             file_size = int(parts[-1])
-            status_code = int(parts[-2])
+            status_code = parts[-2]
+            # We validate that the status code is numeric
+            if status_code.isdigit():
+                status_code = int(status_code)
+                if status_code in self.status_codes_count:
+                    self.status_codes_count[status_code] += 1
+            # We update the total size regardless of the status code
             self.total_size += file_size
-            if status_code in self.status_codes_count:
-                self.status_codes_count[status_code] += 1
             self.line_count += 1
         except (ValueError, IndexError):
             # Log the error for debugging

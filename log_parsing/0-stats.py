@@ -1,5 +1,8 @@
 #!/usr/bin/python3
-""" This module reads stdin line by line and computes metrics. """
+"""
+This script reads input lines from a log file and calculates accumulated
+statistics on file sizes and HTTP status codes.
+"""
 import sys
 import signal
 

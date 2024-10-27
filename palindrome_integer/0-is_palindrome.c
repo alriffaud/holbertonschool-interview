@@ -12,20 +12,16 @@
  */
 int is_palindrome(unsigned long n)
 {
-	char s[20];
-	int len_s, i, j;
+	unsigned long reversed = 0, remainder, original;
 
-	sprintf(s, "%ld", n);
-	len_s = strlen(s);
-	i = 0;
-	j = len_s - 1;
-	while (s[i] == s[j] && i < len_s / 2)
+	original = n;
+	while (n != 0)
 	{
-		i++;
-		j--;
+		remainder = n % 10;
+		reversed = reversed * 10 + remainder;
+		n /= 10;
 	}
-	if (i == len_s / 2)
+	if (original == reversed)
 		return (1);
-	else
-		return (0);
+	return (0);
 }

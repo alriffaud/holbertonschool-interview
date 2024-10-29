@@ -10,29 +10,30 @@ def validUTF8(data):
     Returns:
         True if data is a valid UTF-8 encoding, False otherwise.
     """
+    # Number of bytes expected in the current character
     num_bytes = 0
 
     for num in data:
-        # Convert integer to binary and check the number of leading 1's
-        if num < 0 or num > 255:
-            return False  # Each number must be in the range of a byte
-        if num >> 7 == 0:  # 0xxxxxxx
-            num_bytes = 0
-        elif num >> 5 == 0b110:  # 110xxxxx
-            num_bytes = 1
-        elif num >> 4 == 0b1110:  # 1110xxxx
-            num_bytes = 2
-        elif num >> 3 == 0b11110:  # 11110xxx
-            num_bytes = 3
+        # Mask to keep only the last 8 bits (in case input integers are >255)
+        num = num & 0xFF
+
+        if num_bytes == 0:
+            # Determine the number of bytes in the current UTF-8 character
+            if num >> 7 == 0:  # 1-byte character (0xxxxxxx)
+                continue
+            elif num >> 5 == 0b110:  # 2-byte character (110xxxxx)
+                num_bytes = 1
+            elif num >> 4 == 0b1110:  # 3-byte character (1110xxxx)
+                num_bytes = 2
+            elif num >> 3 == 0b11110:  # 4-byte character (11110xxx)
+                num_bytes = 3
+            else:
+                return False  # Invalid starting byte
         else:
-            return False  # Invalid start byte
-
-        # Check continuation bytes
-        for _ in range(num_bytes):
-            if not data:
-                return False  # Not enough bytes
-            num = data.pop(0)
-            if num >> 6 != 0b10:  # 10xxxxxx
+            # Check if the current byte is a valid continuation byte (10xxxxxx)
+            if num >> 6 != 0b10:
                 return False
+            num_bytes -= 1
 
-    return num_bytes == 0  # Ensure no extra bytes remain unprocessed
+    # If num_bytes is not zero, we have an incomplete UTF-8 character
+    return num_bytes == 0

@@ -15,30 +15,27 @@ skiplist_t *linear_skip(skiplist_t *list, int value)
 	if (list == NULL)
 		return (NULL);
 	express = list;
-	while (express->express && express->n < value)
+	while (express->express != NULL)
 	{
 		printf("Value checked at index [%lu] = [%d]\n",
-		express->index, express->n);
-		prev = express;
+		express->express->index, express->express->n);
+		if (express->express->n >= value)
+			break;
 		express = express->express;
 	}
-	/* Check the last express node */
-	printf("Value checked at index [%lu] = [%d]\n",
-	express->index, express->n);
 	/* Determine range for linear search */
-	if (express->n >= value)
-		printf("Value found between indexes [%lu] and [%lu]\n", prev->index,
-		express->index);
+	prev = express;
+	if (express->express && express->express->n >= value)
+		express = express->express;
 	else
 	{
-		prev = express;
 		while (express->next)
 			express = express->next;
-		printf("Value found between indexes [%lu] and [%lu]\n", prev->index,
-		express->index);
 	}
+	printf("Value found between indexes [%lu] and [%lu]\n",
+			prev->index, express->index);
 	/* Perform linear search in determined range */
-	while (prev && prev->index <= express->index)
+	while (prev != NULL && prev->index <= express->index)
 	{
 		printf("Value checked at index [%lu] = [%d]\n", prev->index, prev->n);
 		if (prev->n == value)

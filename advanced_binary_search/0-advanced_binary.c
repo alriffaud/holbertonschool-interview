@@ -45,7 +45,7 @@ int recursive_search(int *array, size_t left, size_t right, int value)
 		return (recursive_search(array, left, mid, value));
 	}
 	else if (array[mid] > value)
-		return (recursive_search(array, left, mid - 1, value));
+		return (recursive_search(array, left, mid, value));
 	else
 		return (recursive_search(array, mid + 1, right, value));
 }

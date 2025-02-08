@@ -7,15 +7,12 @@
  * @right: Right subarray
  * @size_left: Size of the left subarray
  * @size_right: Size of the right subarray
+ * @temp: Temporary buffer for merging
  */
 void merge(int *array, int *left, int *right, size_t size_left,
-size_t size_right)
+size_t size_right, int *temp)
 {
 	size_t i = 0, j = 0, k = 0;
-	int *temp = malloc((size_left + size_right) * sizeof(int));
-
-	if (!temp)
-		return;
 
 	printf("Merging...\n[left]: ");
 	print_array(left, size_left);
@@ -39,15 +36,15 @@ size_t size_right)
 
 	printf("[Done]: ");
 	print_array(array, size_left + size_right);
-	free(temp);
 }
 
 /**
  * merge_sort_rec - Recursively sorts an array using merge sort
  * @array: The array to sort
  * @size: The size of the array
+ * @temp: Temporary buffer for merging
  */
-void merge_sort_rec(int *array, size_t size)
+void merge_sort_rec(int *array, size_t size, int *temp)
 {
 	if (size < 2)
 		return;
@@ -58,9 +55,9 @@ void merge_sort_rec(int *array, size_t size)
 	size_t size_left = mid;
 	size_t size_right = size - mid;
 
-	merge_sort_rec(left, size_left);
-	merge_sort_rec(right, size_right);
-	merge(array, left, right, size_left, size_right);
+	merge_sort_rec(left, size_left, temp);
+	merge_sort_rec(right, size_right, temp);
+	merge(array, left, right, size_left, size_right, temp);
 }
 
 /**
@@ -73,5 +70,11 @@ void merge_sort(int *array, size_t size)
 	if (!array || size < 2)
 		return;
 
-	merge_sort_rec(array, size);
+	int *temp = malloc(size * sizeof(int));
+
+	if (!temp)
+		return;
+
+	merge_sort_rec(array, size, temp);
+	free(temp);
 }

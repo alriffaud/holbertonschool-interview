@@ -20,14 +20,13 @@ def makeChange(coins, total):
             any(not isinstance(n, int) or n <= 0 for n in coins)):
         return 0
 
-    n = len(coins)
-    coins.sort(reverse=True)
-    result = 0
-    i = 0
-    while i < n:
-        if total >= coins[i]:
-            total -= coins[i]
-            result += 1
-        else:
-            i += 1
-    return result if total == 0 else -1
+    # Initialize a list to store the minimum coins needed for each amount up to total
+    dp = [float('inf')] * (total + 1)
+    dp[0] = 0  # Base case: 0 coins are needed to make total 0
+
+    # Fill the dp array
+    for coin in coins:
+        for amount in range(coin, total + 1):
+            dp[amount] = min(dp[amount], dp[amount - coin] + 1)
+
+    return dp[total] if dp[total] != float('inf') else -1

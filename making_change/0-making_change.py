@@ -19,17 +19,16 @@ def makeChange(coins, total):
     if (not isinstance(coins, list) or
             any(not isinstance(n, int) or n <= 0 for n in coins)):
         return 0
-    coins_ordered = sorted(coins, reverse=True)
-    i = 0
-    n = len(coins)
-    total_coins = 0
-    while (i < n and total != 0):
-        if total >= coins_ordered[i]:
-            quotient = total // coins_ordered[i]
-            total_coins += quotient
-            total = total % coins_ordered[i]
-        i += 1
-    if total == 0:
-        return total_coins
-    else:
-        return -1
+
+    # We create a DP arrangement where dp[i] is the minimum number of
+    # currencies to form i.
+    dp = [float('inf')] * (total + 1)
+    dp[0] = 0  # 0 coins to form 0
+
+    # For each value from 1 to total, we look for the best option
+    for i in range(1, total + 1):
+        for coin in coins:
+            if i >= coin and dp[i - coin] != float('inf'):
+                dp[i] = min(dp[i], dp[i - coin] + 1)
+
+    return dp[total] if dp[total] != float('inf') else -1

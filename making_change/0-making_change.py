@@ -20,7 +20,8 @@ def makeChange(coins, total):
             any(not isinstance(n, int) or n <= 0 for n in coins)):
         return 0
 
-    # Initialize a list to store the minimum coins needed for each amount up to total
+    # Initialize a list to store the minimum coins needed for each amount
+    # up to total
     dp = [float('inf')] * (total + 1)
     dp[0] = 0  # Base case: 0 coins are needed to make total 0
 

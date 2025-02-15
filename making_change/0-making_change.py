@@ -20,15 +20,58 @@ def makeChange(coins, total):
             any(not isinstance(n, int) or n <= 0 for n in coins)):
         return 0
 
-    # We create a DP arrangement where dp[i] is the minimum number of
-    # currencies to form i.
-    dp = [float('inf')] * (total + 1)
-    dp[0] = 0  # 0 coins to form 0
+    # We order from higher to minor to use the highest value coins first
+    coins.sort(reverse=True)
 
-    # For each value from 1 to total, we look for the best option
-    for i in range(1, total + 1):
+    # Function to obtain an initial upper level with a voracious algorithm.
+    def greedy_bound():
+        remaining = total
+        count = 0
         for coin in coins:
-            if i >= coin and dp[i - coin] != float('inf'):
-                dp[i] = min(dp[i], dp[i - coin] + 1)
+            if remaining <= 0:
+                break
+            count += remaining // coin
+            remaining %= coin
+        return count if remaining == 0 else float('inf')
 
-    return dp[total] if dp[total] != float('inf') else -1
+    # Best [0] will save the best (minimum) amount of currencies found so far.
+    best = [greedy_bound()]
+
+    def dfs(i, current_total, count):
+        # If we reach the total, we update the best solution.
+        if current_total == total:
+            best[0] = min(best[0], count)
+            return
+
+        # If we have already reviewed all the coins, we leave.
+        if i >= len(coins):
+            return
+
+        coin = coins[i]
+        # We estimate a lower limit:
+        # We use the current currency to "cover" the remainder.
+        lower_bound = count + ((total - current_total) + coin - 1) // coin
+        if lower_bound >= best[0]:
+            return
+
+        # Si la moneda es 1, podemos completar la solución de inmediato.
+        if coin == 1:
+            best[0] = min(best[0], count + (total - current_total))
+            return
+
+        # If the currency is 1, we can complete the solution immediately.
+        max_val = (total - current_total) // coin
+        for x in range(max_val, -1, -1):
+            new_count = count + x
+            if new_count >= best[0]:
+                # If we already use many coins, it makes no sense to continue
+                # with X minor.
+                break
+            new_total = current_total + x * coin
+            if new_total == total:
+                best[0] = min(best[0], new_count)
+                break
+            dfs(i + 1, new_total, new_count)
+
+    dfs(0, 0, 0)
+    return best[0] if best[0] != float('inf') else -1
